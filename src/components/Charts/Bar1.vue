@@ -4,7 +4,6 @@
     :viewBox="viewBox"
     preserveAspectRatio="xMinYMin meet"
     class="bar-chart"
-    overflowx="auto"
   >
     <g :transform="stageTransform">
       <text
@@ -193,19 +192,20 @@
                 return `translate(0,${this.layout.height})`
             },
             tooltipTransform() {
-                let x = this.tooltip.pos.x
+                let x = (this.tooltip.pos.x > this.layout.width) ? (this.layout.width - 160): (this.tooltip.pos.x - 80);
 
-                if (x + this.layout.tooltip.width > this.layout.width) {
+               /* if (x + this.layout.tooltip.width > this.layout.width) {
                     x -= (this.layout.tooltip.width + 40)
-                }
+                }*/
 
-                return `translate(50,50)`
+                return `translate(${x},100)`
             },
             tooltipValueItemTransform() {
                 return `translate(${this.layout.tooltip.text.x},${this.layout.tooltip.valueItemY})`
             },
             tooltipName() {
-                return (this.tooltip.data.name !== null) ? this.tooltipFormat.band(this.parse.band(this.tooltip.data.name)) : ''
+                console.log(this.parse.value,"value",this.tooltip.data.name)
+                return (this.tooltip.data.name !== null) ? this.parse.value(this.tooltip.data.name) : ''
             },
             tooltipValue() {
                 return (this.tooltip.data.value !== null) ? this.tooltipFormat.value[this.tooltip.data.index](this.parse.value(this.tooltip.data.value)) : ''
@@ -246,7 +246,7 @@
                 return d3.scaleOrdinal().range(this.colors)
             },
             updateScales() {
-                this.scale.band.domain(this.data.map(d => this.parse.band(d.name)))
+                this.scale.band.domain(this.data.map(d => this.parse.value(d.name)))
                 this.scale.bandItem.domain(this.columns).rangeRound([0, this.scale.band.bandwidth()])
 
                 if (this.options.axisCount === 1) {
@@ -272,7 +272,7 @@
 
                 const ticks = Math.max(Math.floor(this.data.length / this.band.ticks), 1)
       
-                const axisBands = d3.axisBottom(this.scale.band).tickValues(this.scale.band.domain().filter((d, i) => (this.band.ticks === null) || !(i % ticks))).tickFormat(this.band.format)
+                const axisBands = d3.axisBottom(this.scale.band).tickValues(this.scale.band.domain().filter((d, i) => (this.band.ticks === null) || !(i % ticks)))
                 const $$axisBands = $axisBands.call(axisBands)
                  
                 $axisBands.selectAll('text')
@@ -340,7 +340,7 @@
                 const $band = $bandSeries.selectAll('g').data(this.data)
                     .enter()
                     .append('g')
-                    .attr('transform', d => `translate(${this.scale.band(this.parse.band(d.name))},0)`)
+                    .attr('transform', d => `translate(${this.scale.band(this.parse.value(d.name))},0)`)
                     .selectAll('rect').data(d => this.columns.map((column, i) => ({index: i, 'column': column, name: d.name, value: d[column]})))
                     .enter()
                     .append('rect')

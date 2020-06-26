@@ -62,7 +62,7 @@
                     'median(gas_used)': Number(d['median(gas_used)']),
                     'avg(gas_price)': Number(d['avg(gas_price)']) / 1000000000
                 }))
-
+                 console.log(data.columns,"columns")
                 this.columns = data.columns.slice(1)
                 this.data = data.slice()
                 this.loaded = true

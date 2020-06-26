@@ -1,5 +1,4 @@
 <template>
-  <div>
   <bar-chart1
     v-if="loaded"
     :data="data"
@@ -12,10 +11,6 @@
     :axis-legend="axisLegend"
     :name="name"
   /><b v-else>Bar chart loading...</b>
-  <hr/>
-  <MGBar/>
-  <hr/>
- </div>
 </template>
 
 <script>
@@ -24,13 +19,11 @@
     import {format} from 'd3-format'
 
     import BarChart1 from '@/components/Charts/Bar1'
-    import MGBar from '@/components/MGBar'
-    import BarFS from '@/components/BarFS'
+
     export default {
+        name: "MGBar",
         components: {
-            BarChart1,
-            MGBar,
-            BarFS
+            BarChart1
         },
         data() {
             return {
@@ -42,7 +35,7 @@
                     ticks: 10,
                     format: format(".2")
                 },
-                names: ['Hot Metal Weight', 'Hot Metal Start Temp'],
+                names: ['MG Kg/T', 'Actual Mg'],
                 options: {
                     scaleLog: false,
                     legend: true,
@@ -55,9 +48,9 @@
                 },
                 axisLegend: {
                     x: 'Start Sulfur',
-                    y: ['Avg of HotMetal Weight', 'Sum of HotMetal Weight/1000']
+                    y: ['Avg of MG Kg/T', 'Avg of Actual Mg']
                 },
-                name: 'Avg and Sum of HM WGT "\nVS"\n Start Sulfur'
+                name: 'Avg of  "\nMG Kg/T"\n  and "\nActual Mg"\n Over Start Sulfur'
             }
         },
         created() {
@@ -71,15 +64,15 @@
                       let item = d.aggregations['Start Sulfur'].buckets[i];
                       dataObject.push({
                         "name": item.key,
-                        "avg HM WGT": Number(item['HM WGT TONS'].avg),
-                        "sum HM Wg": Number(item['HM WGT TONS'].sum)
+                        "MG Kg/T": Number(item['MG Kg/T'].avg),
+                        "Actual Mg": Number(item['Actual Mg'].avg)
                       })
                       
                     }
                     return dataObject;
                 } )
              
-                this.columns = ["avg HM WGT","sum HM Wg"]
+                this.columns = ["MG Kg/T","Actual Mg"]
                 this.data = data
                 this.loaded = true
             }
